@@ -1,7 +1,7 @@
 <section class="history"><div class="section-head">
 <h2><?=$page==='history'?'Báo cáo của bạn':'Lần quét gần đây'?></h2>
 <?php if ($page==='history'): ?><small><?=(int)$totals['total']?> lượt quét</small>
-<?php else: ?><a href="?page=history">Xem lịch sử ↗</a><?php endif ?></div>
+<?php else: ?><a href="?page=history">Xem lịch sử <i class="diagonal-arrow" aria-hidden="true"></i></a><?php endif ?></div>
 <?php if (!$rows): ?><p class="empty">Chưa có lượt quét ở đây.</p><?php endif ?>
 <?php foreach ($rows as $row):
 $size = $row['bytes'];

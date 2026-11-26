@@ -169,3 +169,5 @@ input:not([type=file]),select { background: #101115; border: 1px solid #484955; 
 @media(prefers-reduced-motion: reduce) {
   *,*::before,*::after { animation: none !important; transition: none !important }
 }
+.diagonal-arrow { display: inline-block; position: relative; width: .65em; height: .65em; border-top: 1.5px solid; border-right: 1.5px solid; margin-left: .15em }
+.diagonal-arrow::after { content: ""; position: absolute; right: 0; top: 0; width: 135%; height: 1.5px; background: currentColor; transform: rotate(-45deg); transform-origin: right center }
