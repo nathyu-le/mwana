@@ -15,9 +15,9 @@ require dirname(__DIR__).'/app/VirusTotal.php';
 $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
 function token(): string { return '<input type="hidden" name="csrf" value="'.e($_SESSION['csrf']).'">'; }
 $labels = ['matched'=>'Khớp chữ ký','unmatched'=>'Chưa khớp','partial'=>'Chưa hoàn tất'];
-$pages = ['dashboard'=>'Tổng quan','scanner'=>'Phân tích file','history'=>'Lịch sử','admin'=>'Quản trị','report'=>'Báo cáo'];
+$pages = ['dashboard'=>'Tổng quan','scanner'=>'Trình quét','history'=>'Lịch sử','admin'=>'Chữ ký','report'=>'Báo cáo'];
 $user = $_SESSION['user']??null;
-$page = $user ? ($_GET['page']??'dashboard') : 'login';
+$page = $user ? ($_GET['page']??'scanner') : 'login';
 $error = null;
 try {
     if ($_SERVER['REQUEST_METHOD']==='POST') {
@@ -30,7 +30,7 @@ try {
             unset($row['password_hash']);
             session_regenerate_id(true);
             $_SESSION = ['user'=>$row,'csrf'=>bin2hex(random_bytes(32))];
-            go('page=dashboard');
+            go('page=scanner');
         }
         if ($action==='logout') { $_SESSION=[]; session_destroy(); go(''); }
         if ($action==='scan') go('page=report&id='.saveUpload((int)$user['id']));
@@ -58,12 +58,16 @@ try {
                 echo jsonData(['file'=>$scan['filename'],'created_at'=>$scan['created_at'],'internal'=>$report,'virustotal'=>$vt]);
                 exit;
             }
-        } elseif ($page==='dashboard' || $page==='history') {
-            $totals = query("SELECT COUNT(*) total, COALESCE(SUM(status='matched'),0) matched, COALESCE(SUM(status='partial'),0) partial FROM scans WHERE user_id=?",[$user['id']])->fetch();
-            $p = max(1,min(10000000,(int)($_GET['p']??1)));
-            $limit = $page==='dashboard'?5:20;
+        } elseif (in_array($page,['scanner','dashboard','history'],true)) {
+            $p = $page==='history' ? max(1,min(10000000,(int)($_GET['p']??1))) : 1;
+            $limit = match ($page) { 'scanner'=>3, 'dashboard'=>5, default=>20 };
             $offset = ($p-1)*$limit;
-            $rows = query("SELECT id,filename,status,created_at FROM scans WHERE user_id=? ORDER BY id DESC LIMIT $limit OFFSET $offset",[$user['id']])->fetchAll();
+            $rows = query("SELECT id,filename,status,created_at,JSON_UNQUOTE(JSON_EXTRACT(report,'$.size')) AS bytes
+                FROM scans WHERE user_id=? ORDER BY id DESC LIMIT $limit OFFSET $offset",[$user['id']])->fetchAll();
+            if ($page!=='scanner') {
+                $totals = query("SELECT COUNT(*) total, COALESCE(SUM(status='matched'),0) matched,
+                    COALESCE(SUM(status='partial'),0) partial FROM scans WHERE user_id=?",[$user['id']])->fetch();
+            }
         } elseif ($page==='admin') {
             $rules = query('SELECT * FROM signatures ORDER BY id DESC')->fetchAll();
             $enabled = query('SELECT vt_enabled FROM settings WHERE id=1')->fetchColumn();
