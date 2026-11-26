@@ -1,0 +1,4 @@
+MALWAREGUARD-DEMO-ONLY
+Training sample for the local byte signature.
+https://example.org/report
+192.0.2.10
