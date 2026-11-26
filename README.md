@@ -1,11 +1,11 @@
-# MalwareGuard
+# MalwareGuard 1.1.0
 
 Website phân tích tĩnh cho đồ án Malware Analysis, xây dựng bằng PHP 8.1+ và MySQL/MariaDB. Người dùng đăng nhập để quét tệp, xem bằng chứng và xuất báo cáo JSON. Quản trị viên quản lý chữ ký và bật hoặc tắt tra cứu VirusTotal.
 
 ## Cài trên cPanel
 
 1. Chọn PHP 8.1 trở lên với PDO MySQL, fileinfo, ctype và cURL. Dùng HTTPS. Đặt `upload_max_filesize` từ 2M, `post_max_size` từ 4M và thư mục upload tạm bên ngoài webroot.
-2. Clone repo vào thư mục riêng, ví dụ `/home/ACCOUNT/malwareguard`. Trong **Domains**, trỏ Document Root của subdomain vào `/home/ACCOUNT/malwareguard/public`. Nếu host chỉ cho dùng `public_html`, chép hai file trong `public/` vào đó và đổi các đường dẫn `dirname(__DIR__).'/app/…'` trong `index.php` để trỏ tới thư mục app thật. Giữ config, database, bin và tests ngoài thư mục công khai.
+2. Clone repo vào thư mục riêng, ví dụ `/home/ACCOUNT/malwareguard`. Trong **Domains**, trỏ Document Root của subdomain vào `/home/ACCOUNT/malwareguard/public`. Nếu host chỉ cho dùng `public_html`, chép toàn bộ nội dung `public/` (gồm CSS, JavaScript và logo) vào đó và đổi các đường dẫn `dirname(__DIR__).'/app/…'` trong `index.php` để trỏ tới thư mục app thật. Giữ config, database, bin và tests ngoài thư mục công khai.
 3. Tạo database trống cùng database user trong **Manage My Databases**. Cấp quyền trên database đó. Import `database/schema.sql` một lần bằng phpMyAdmin.
 4. Chép `config/example.php` thành `config/local.php`. Điền tên database, user và mật khẩu của hosting. Có thể để trống `vt_key`.
 5. Mở Terminal của cPanel ở thư mục dự án. Dùng PHP CLI cùng phiên bản với website. Tạo tài khoản, nhập mật khẩu ở lời nhắc.
@@ -29,7 +29,7 @@ php tests/run.php
 php -S 127.0.0.1:8000 -t public
 ~~~
 
-Đăng nhập, chọn **Phân tích file**, tải `tests/demo.txt`. Báo cáo phải hiển thị chữ ký **Demo marker**, phiên bản 1, offset 0, cùng URL và IPv4 của mẫu. Tắt chữ ký trong **Quản trị** rồi quét lại để quan sát sự khác biệt. Báo cáo cũ giữ nguyên bằng chứng ban đầu.
+Đăng nhập, vào **Trình quét**, chọn hoặc thả tệp `tests/demo.txt`. Báo cáo phải hiển thị chữ ký **Demo marker**, phiên bản 1, offset 0, cùng URL và IPv4 của mẫu. Tắt chữ ký trong **Chữ ký** rồi quét lại để quan sát sự khác biệt. Báo cáo cũ giữ nguyên bằng chứng ban đầu.
 
 ## Bộ phân tích
 
@@ -41,6 +41,6 @@ php -S 127.0.0.1:8000 -t public
 
 ## Đối chiếu VirusTotal
 
-Điền API key vào cấu hình riêng rồi bật tích hợp trong **Quản trị**. Từ báo cáo đã lưu, chọn **Tra cứu SHA-256**. Backend gửi GET theo hash qua TLS. File và tên file không được gửi đi. Một lần tra cứu mạng cách lần tiếp theo ít nhất 16 giây trên mỗi bản cài, có xử lý 429 và Retry-After. Cache báo cáo được 60 phút, kết quả chưa có báo cáo được 5 phút. Kết quả ngoài có nguồn, thời điểm và trạng thái riêng.
+Điền API key vào cấu hình riêng rồi bật tích hợp trong **Chữ ký**. Từ báo cáo đã lưu, chọn **Tra cứu SHA-256**. Backend gửi GET theo hash qua TLS. File và tên file không được gửi đi. Một lần tra cứu mạng cách lần tiếp theo ít nhất 16 giây trên mỗi bản cài, có xử lý 429 và Retry-After. Cache báo cáo được 60 phút, kết quả chưa có báo cáo được 5 phút. Kết quả ngoài có nguồn, thời điểm và trạng thái riêng.
 
 Tài liệu kỹ thuật: [VirusTotal file report](https://docs.virustotal.com/reference/file-info) · [Microsoft PE format](https://learn.microsoft.com/en-us/windows/win32/debug/pe-format).
