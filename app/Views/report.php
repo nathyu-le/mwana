@@ -6,7 +6,7 @@ function evidenceTable(array $rows,array $columns): void { ?>
 $ev=$report['evidence']; $pe=$report['pe']; ?>
 <div class="heading"><div><span class="eyebrow">BÁO CÁO #<?=(int)$scan['id']?></span><h1><?=e($scan['filename'])?></h1></div>
 <a class="button secondary" href="?page=export&amp;id=<?=(int)$scan['id']?>">Tải JSON ↓</a></div>
-<section class="card"><small>PHÂN TÍCH NỘI BỘ</small><h2><?=e($labels[$report['status']])?></h2>
+<section class="card"><small>PHÂN TÍCH NỘI BỘ</small><h2 class="status <?=e($report['status'])?>"><?=e($labels[$report['status']])?></h2>
 <p><?=e($report['size'])?> byte · <?=e($report['mime'])?> · <?=e($report['rules'])?> chữ ký · <?=e($report['elapsed_ms'])?> ms</p>
 <?php foreach ($report['hashes'] as $k=>$v): ?><div class="hash"><small><?=e(strtoupper($k))?></small><code><?=e($v)?></code></div><?php endforeach ?>
 <?php if ($report['findings']): evidenceTable($report['findings'],['name'=>'Chữ ký','version'=>'Phiên bản','source'=>'Nguồn','kind'=>'Loại','pattern'=>'Mẫu khớp','offset'=>'Offset đầu tiên']);
