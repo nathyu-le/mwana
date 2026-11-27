@@ -1,5 +1,6 @@
 <h1><?= e(t('Quét tệp')) ?></h1>
 <form class="dropzone" id="scanner"
+    data-hash-worker="<?=asset('js/hash-worker.js')?>"
     data-size="<?= e(t('Chọn một tệp từ 1 byte đến 2 MiB.')) ?>"
     data-scanning="<?= e(t('Đang quét tệp…')) ?>"
     data-drop="<?= e(t('Thả để quét tệp')) ?>"

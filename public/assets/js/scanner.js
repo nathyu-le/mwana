@@ -18,6 +18,26 @@
     title.textContent = defaultTitle;
     hint.textContent = message;
   }
+  async function fileDigest(file) {
+    if (file.size <= 4 * 1024 * 1024) {
+      const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+      return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
+    }
+    const worker = new Worker(form.dataset.hashWorker);
+    try {
+      return await new Promise((resolve, reject) => {
+        worker.onerror = reject;
+        worker.onmessage = ({data}) => {
+          if (data.failed) reject(new Error('File read failed'));
+          else if (data.digest) resolve(data.digest);
+          else hint.textContent = file.name + ' · ' + data.percent + '%';
+        };
+        worker.postMessage(file);
+      });
+    } finally {
+      worker.terminate();
+    }
+  }
   async function scan(file) {
     if (sending) return;
     if (!file) return;
@@ -31,8 +51,7 @@
     title.textContent = form.dataset.scanning;
     hint.textContent = file.name;
     try {
-      const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
-      form.elements.sha256.value = Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
+      form.elements.sha256.value = await fileDigest(file);
       form.elements.filename.value = file.name;
       form.elements.size.value = String(file.size);
       form.submit();
