@@ -11,24 +11,35 @@ require dirname(__DIR__).'/bootstrap.php';
 require dirname(__DIR__).'/Analysis/Scanner.php';
 require dirname(__DIR__).'/Actions.php';
 require dirname(__DIR__).'/Accounts/passwords.php';
+require dirname(__DIR__).'/Admin/settings.php';
 require dirname(__DIR__).'/VirusTotal.php';
 
 $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
 function token(): string { return '<input type="hidden" name="csrf" value="'.e($_SESSION['csrf']).'">'; }
 $labels = ['matched'=>'Khớp chữ ký','unmatched'=>'Chưa khớp','partial'=>'Chưa hoàn tất'];
-$pages = ['dashboard'=>'Tổng quan','scanner'=>'Trình quét','history'=>'Lịch sử','admin'=>'Chữ ký','report'=>'Báo cáo','account'=>'Tài khoản','register'=>'Tạo tài khoản','login'=>'Đăng nhập'];
+$pages = ['dashboard'=>'Tổng quan','scanner'=>'Trình quét','history'=>'Lịch sử','admin'=>'Admin Panel','report'=>'Báo cáo','account'=>'Tài khoản','register'=>'Tạo tài khoản','login'=>'Đăng nhập'];
 $user = $_SESSION['user']??null;
 $requestedPage = $_GET['page'] ?? 'scanner';
 $page = $user ? (is_string($requestedPage) ? $requestedPage : '') : ($requestedPage === 'register' ? 'register' : 'login');
+$adminTabs = ['settings'=>'Cài đặt', 'signatures'=>'Chữ ký'];
+$selectedTab = $_GET['tab'] ?? 'settings';
+$adminTab = is_string($selectedTab) && isset($adminTabs[$selectedTab]) ? $selectedTab : 'settings';
+$settings = ['site_name'=>'MalwareGuard', 'registration_open'=>false];
 $error = null;
 $notice = $_SESSION['notice'] ?? null;
 unset($_SESSION['notice']);
 try {
+    $settings = readSiteSettings();
+    if (!$user && $page === 'register' && !$settings['registration_open']) {
+        $page = 'login';
+        throw new InputError('Website đang tạm đóng đăng ký.');
+    }
     if ($_SERVER['REQUEST_METHOD']==='POST') {
         if (!hash_equals($_SESSION['csrf'],(string)($_POST['csrf']??''))) throw new InputError('Phiên gửi biểu mẫu đã hết hạn. Tải lại trang.');
         $action = $_POST['action']??'';
         if (!$user) {
             if ($action === 'register') {
+                if (!$settings['registration_open']) throw new InputError('Website đang tạm đóng đăng ký.');
                 registerAccount($_POST);
                 $_SESSION['notice'] = 'Tài khoản đã tạo. Bạn có thể đăng nhập.';
                 go('page=login');
@@ -55,10 +66,15 @@ try {
             go('page=report&id='.$scan['id']);
         }
         if ($user['role']!=='admin') { http_response_code(403); throw new InputError('Chức năng dành cho quản trị viên.'); }
+        if ($action === 'save_site') {
+            saveSiteSettings($_POST);
+            $_SESSION['notice'] = 'Đã lưu cài đặt.';
+            go('page=admin&tab=settings');
+        }
         if (in_array($action,['rule_add','rule_toggle'],true)) changeRule($action);
         elseif ($action==='vt_toggle') query('UPDATE settings SET vt_enabled=? WHERE id=1',[(int)(($_POST['enabled']??'')==='1')]);
         else throw new InputError('Thao tác không hợp lệ.');
-        go('page=admin');
+        go('page=admin&tab=signatures');
     }
     if ($user) {
         if ($page==='admin' && $user['role']!=='admin') { http_response_code(403); throw new InputError('Chức năng dành cho quản trị viên.'); }
@@ -82,10 +98,10 @@ try {
                 $totals = query("SELECT COUNT(*) total, COALESCE(SUM(status='matched'),0) matched,
                     COALESCE(SUM(status='partial'),0) partial FROM scans WHERE user_id=?",[$user['id']])->fetch();
             }
-        } elseif ($page==='admin') {
+        } elseif ($page==='admin' && $adminTab==='signatures') {
             $rules = query('SELECT * FROM signatures ORDER BY id DESC')->fetchAll();
             $enabled = query('SELECT vt_enabled FROM settings WHERE id=1')->fetchColumn();
-        } elseif ($page!=='account') { http_response_code(404); throw new InputError('Trang không tồn tại.'); }
+        } elseif (!in_array($page,['account','admin'],true)) { http_response_code(404); throw new InputError('Trang không tồn tại.'); }
     }
 } catch (InputError $e) {
     $error = $e->getMessage();

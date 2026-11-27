@@ -73,3 +73,8 @@ input:not([type=file]),select { background: #101115; border: 1px solid #484955; 
 .splash { display: none }
 .diagonal-arrow { display: inline-block; position: relative; width: .65em; height: .65em; border-top: 1.5px solid; border-right: 1.5px solid; margin-left: .15em }
 .diagonal-arrow::after { content: ""; position: absolute; right: 0; top: 0; width: 135%; height: 1.5px; background: currentColor; transform: rotate(-45deg); transform-origin: right center }
+
+.admin-tabs { display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 24px; border-bottom: 1px solid var(--line) }
+.admin-tabs a { padding: 8px 0; color: var(--muted) }
+.admin-tabs a[aria-current] { color: var(--ink); border-bottom: 2px solid var(--accent) }
+.loginform p { margin-top: 14px }

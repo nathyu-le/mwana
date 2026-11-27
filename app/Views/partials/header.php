@@ -5,7 +5,7 @@ $initials = $user ? strtoupper(substr(preg_replace('/[^a-z0-9]/i','',explode('@'
     <div class="splash-mark"><img src="<?= asset('img/mark.svg') ?>" width="128" height="84" alt=""></div>
 </div>
 <header class="topbar"><div class="bar-inner">
-<a class="brand" href="?"><img src="<?= asset('img/mark.svg') ?>" alt="" width="43" height="29">MalwareGuard</a>
+<a class="brand" href="?"><img src="<?= asset('img/mark.svg') ?>" alt="" width="43" height="29"><?= e($settings['site_name']) ?></a>
 <?php if ($user): ?><nav aria-label="Điều hướng chính">
 <?php foreach (['scanner','history','admin'] as $tab): if ($tab==='admin' && $user['role']!=='admin') continue; ?>
 <a href="?page=<?=$tab?>" <?=($page===$tab || ($page==='report' && $tab==='history'))?'aria-current="page"':''?>><?=$pages[$tab]?></a>
