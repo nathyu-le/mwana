@@ -41,7 +41,7 @@
   async function scan(file) {
     if (sending) return;
     if (!file) return;
-    if (!file.size || file.size > 2 * 1024 * 1024) {
+    if (!file.size || file.size > Number(form.dataset.maxBytes)) {
       reset(form.dataset.size);
       return;
     }

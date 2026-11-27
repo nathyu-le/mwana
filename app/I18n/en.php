@@ -1,5 +1,7 @@
 <?php
 return [
+    'Dung lượng tối đa mỗi tệp (MiB)' => 'Maximum file size (MiB)',
+    'Nhập dung lượng từ 1 đến 1024 MiB.' => 'Enter a size between 1 and 1024 MiB.',
     'Loading khi tải lại trang (giây)' => 'Reload animation (seconds)',
     '0 giây để tắt.' => 'Set to 0 to turn off.',
     'Nhập từ 0 đến 30 giây, tối đa một chữ số thập phân.' => 'Enter 0 to 30 seconds with up to one decimal place.',
@@ -48,7 +50,7 @@ return [
     'Nhãn do từng công cụ cung cấp' => 'Labels reported by individual engines',
     'Có cảnh báo' => 'Flagged by VirusTotal engines',
     'Tên tệp hoặc SHA-256 không hợp lệ.' => 'Invalid filename or SHA-256.',
-    'Tối đa 2 MiB · Chỉ gửi SHA-256 đến VirusTotal' => 'Up to 2 MiB · Only the SHA-256 is sent to VirusTotal',
+    'Tối đa %d MiB · Chỉ gửi SHA-256 đến VirusTotal' => 'Up to %d MiB · Only the SHA-256 is sent to VirusTotal',
     'Không đọc được tệp. Hãy dùng HTTPS và chọn lại tệp.' => 'Cannot read the file. Use HTTPS and select it again.',
     'Bật JavaScript để tính SHA-256.' => 'Enable JavaScript to calculate SHA-256.',
     'Người đã quét' => 'Users who have scanned',
@@ -168,7 +170,7 @@ return [
     'Kết quả từng engine' => 'Results by engine',
     'Tên phát hiện' => 'Detection name',
     'Tra cứu SHA-256' => 'Look up SHA-256',
-    'Chọn một tệp từ 1 byte đến 2 MiB.' => 'Choose a file between 1 byte and 2 MiB.',
+    'Chọn một tệp từ 1 byte đến %d MiB.' => 'Choose a file between 1 byte and %d MiB.',
     'Đang quét tệp…' => 'Scanning file…',
     'Thả để quét tệp' => 'Drop to scan',
     'Mỗi lượt quét nhận một tệp.' => 'Select one file per scan.',

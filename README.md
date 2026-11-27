@@ -53,6 +53,6 @@ php tests/run.php
 php -S 127.0.0.1:8000 -t public
 ~~~
 
-Đăng nhập và chọn tệp tối đa 2 MiB trong **Trình quét** để mở báo cáo. Nếu chưa có kết quả cho SHA-256, trang hiển thị trạng thái chưa có báo cáo. Mỗi lần tra cứu mạng cách nhau ít nhất 16 giây. Hệ thống lưu đệm báo cáo 60 phút và kết quả chưa tìm thấy 5 phút. Các báo cáo nội bộ trước phiên bản 1.4 vẫn giữ được bằng chứng ban đầu.
+Đăng nhập và chọn tệp (mặc định tối đa 100 MiB, có thể chỉnh 1–1024 MiB trong Admin Panel → Cài đặt) trong **Trình quét** để mở báo cáo. Nếu chưa có kết quả cho SHA-256, trang hiển thị trạng thái chưa có báo cáo. Mỗi lần tra cứu mạng cách nhau ít nhất 16 giây. Hệ thống lưu đệm báo cáo 60 phút và kết quả chưa tìm thấy 5 phút. Các báo cáo nội bộ trước phiên bản 1.4 vẫn giữ được bằng chứng ban đầu.
 
 Báo cáo hiển thị loại và họ mã độc khi VirusTotal cung cấp. Nhãn riêng của từng engine có tên nguồn đi kèm. Mức nguy hiểm và kết luận của VirusTotal được giữ riêng với điểm đồng thuận trên 100. Điểm bằng số engine báo độc chia cho số engine trả về một trong bốn kết quả malicious, suspicious, harmless, undetected, nhân 100 và làm tròn. Tỷ lệ đáng ngờ được tính riêng. Khi thiếu bộ đếm hoặc không có engine trả kết quả, điểm để trống. Điểm 0 chỉ cho biết chưa có engine báo độc. Các gợi ý điều tra quan hệ mạng và tệp được tạo ra chỉ xuất hiện khi báo cáo có chỉ dấu tương ứng.

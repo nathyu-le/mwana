@@ -1,5 +1,5 @@
 <?php
-const UI_VERSION = '1.5.1';
+const UI_VERSION = '1.6.0';
 
 function asset(string $file): string
 {

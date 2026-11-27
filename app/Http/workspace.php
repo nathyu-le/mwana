@@ -67,7 +67,7 @@ try {
             $_SESSION['notice'] = 'Đã đổi mật khẩu.';
             go('page=account');
         }
-        if ($action==='scan') go('page=report&id='.saveHashScan((int)$user['id'], $_POST));
+        if ($action==='scan') go('page=report&id='.saveHashScan((int)$user['id'], $_POST, (int)$settings['max_file_mib']));
         if ($action==='lookup') {
             $scan = ownScan((int)($_POST['id']??0),(int)$user['id']);
             $vt = vtLookup($scan['sha256']);

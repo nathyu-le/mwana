@@ -22,6 +22,10 @@
                 aria-describedby="reload-help" value="<?=e($settings['reload_seconds'])?>">
             <small id="reload-help"><?= e(t('0 giây để tắt.')) ?></small>
         </label>
+        <label><?= e(t('Dung lượng tối đa mỗi tệp (MiB)')) ?>
+            <input name="max_file_mib" type="number" min="1" max="1024" step="1" required
+                value="<?=e($settings['max_file_mib'])?>">
+        </label>
         <button name="action" value="save_site"><?= e(t('Lưu cài đặt')) ?></button>
     </form>
 </section>
