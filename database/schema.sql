@@ -5,14 +5,6 @@ CREATE TABLE users (
  role ENUM('analyst','admin') NOT NULL DEFAULT 'analyst'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE signatures (
- id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
- name VARCHAR(96) NOT NULL, kind ENUM('md5','sha256','bytes') NOT NULL,
- pattern VARCHAR(512) CHARACTER SET ascii NOT NULL, source VARCHAR(128) NOT NULL,
- version VARCHAR(48) NOT NULL, active BOOLEAN NOT NULL DEFAULT 1,
- UNIQUE KEY unique_revision(name,version)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
 CREATE TABLE scans (
  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
  user_id BIGINT UNSIGNED NOT NULL, filename VARCHAR(220) NOT NULL,
@@ -27,9 +19,7 @@ CREATE TABLE vt_cache (
 ) ENGINE=InnoDB;
 
 CREATE TABLE settings (
- id TINYINT PRIMARY KEY, vt_enabled BOOLEAN NOT NULL DEFAULT 0,
+ id TINYINT PRIMARY KEY,
  vt_next BIGINT UNSIGNED NOT NULL DEFAULT 0
 ) ENGINE=InnoDB;
 INSERT INTO settings(id) VALUES (1);
-INSERT INTO signatures(name,kind,pattern,source,version) VALUES
-('Demo marker','bytes',HEX('MALWAREGUARD-DEMO-ONLY'),'MalwareGuard demo','1');

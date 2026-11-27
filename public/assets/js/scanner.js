@@ -1,7 +1,7 @@
 (() => {
   const form = document.getElementById('scanner');
   if (!form) return;
-  const input = form.elements.sample;
+  const input = form.querySelector('[type=file]');
   const title = document.getElementById('scan-title');
   const hint = document.getElementById('scan-hint');
   const defaultTitle = title.textContent;
@@ -18,25 +18,35 @@
     title.textContent = defaultTitle;
     hint.textContent = message;
   }
-  function scan() {
+  async function scan(file) {
     if (sending) return;
-    const file = input.files[0];
     if (!file) return;
     if (!file.size || file.size > 2 * 1024 * 1024) {
       reset(form.dataset.size);
       return;
     }
-    form.requestSubmit();
-  }
-  form.addEventListener('submit', event => {
-    if (sending) { event.preventDefault(); return; }
     sending = true;
     form.classList.add('busy');
     form.setAttribute('aria-busy', 'true');
     title.textContent = form.dataset.scanning;
-    hint.textContent = input.files[0].name;
-  });
-  input.addEventListener('change', scan);
+    hint.textContent = file.name;
+    try {
+      const digest = await crypto.subtle.digest('SHA-256', await file.arrayBuffer());
+      form.elements.sha256.value = Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, '0')).join('');
+      form.elements.filename.value = file.name;
+      form.elements.size.value = String(file.size);
+      form.submit();
+    } catch {
+      reset(form.dataset.failed);
+    }
+  }
+  form.addEventListener('submit', event => event.preventDefault());
+  if (!window.crypto?.subtle) {
+    hint.textContent = form.dataset.failed;
+    return;
+  }
+  input.disabled = false;
+  input.addEventListener('change', () => scan(input.files[0]));
   for (const type of ['dragenter','dragover','dragleave','drop']) {
     form.addEventListener(type, event => {
       if (!event.dataTransfer.types.includes('Files')) return;
@@ -53,9 +63,7 @@
         dragDepth = 0;
         form.classList.remove('dragging');
         if (event.dataTransfer.files.length !== 1) { reset(form.dataset.single); return; }
-        try { input.files = event.dataTransfer.files; }
-        catch { reset(form.dataset.picker); return; }
-        scan();
+        scan(event.dataTransfer.files[0]);
       }
     });
   }

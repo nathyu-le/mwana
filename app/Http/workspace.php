@@ -8,7 +8,6 @@ header('Cache-Control: no-store');
 header('X-Content-Type-Options: nosniff');
 header("Content-Security-Policy: default-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'");
 require dirname(__DIR__).'/bootstrap.php';
-require dirname(__DIR__).'/Analysis/Scanner.php';
 require dirname(__DIR__).'/Actions.php';
 require dirname(__DIR__).'/Accounts/passwords.php';
 require dirname(__DIR__).'/Admin/settings.php';
@@ -18,12 +17,12 @@ require dirname(__DIR__).'/VirusTotal.php';
 
 $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
 function token(): string { return '<input type="hidden" name="csrf" value="'.e($_SESSION['csrf']).'">'; }
-$labels = ['matched'=>'Khớp chữ ký','unmatched'=>'Chưa khớp','partial'=>'Chưa hoàn tất'];
+$labels = vtStates() + ['vt_flagged'=>'Có cảnh báo','matched'=>'Khớp chữ ký','unmatched'=>'Chưa khớp','partial'=>'Chưa hoàn tất'];
 $pages = ['dashboard'=>'Tổng quan','scanner'=>'Trình quét','history'=>'Lịch sử','admin'=>'Admin Panel','report'=>'Báo cáo','account'=>'Tài khoản','register'=>'Tạo tài khoản','login'=>'Đăng nhập'];
 $user = $_SESSION['user']??null;
 $requestedPage = $_GET['page'] ?? 'scanner';
 $page = $user ? (is_string($requestedPage) ? $requestedPage : '') : ($requestedPage === 'register' ? 'register' : 'login');
-$adminTabs = ['overview'=>'Thống kê', 'settings'=>'Cài đặt', 'signatures'=>'Chữ ký'];
+$adminTabs = ['overview'=>'Thống kê', 'settings'=>'Cài đặt'];
 $selectedTab = $_GET['tab'] ?? 'overview';
 $adminTab = is_string($selectedTab) && isset($adminTabs[$selectedTab]) ? $selectedTab : 'overview';
 $settings = ['site_name'=>'MalwareGuard', 'registration_open'=>false];
@@ -67,11 +66,16 @@ try {
             $_SESSION['notice'] = 'Đã đổi mật khẩu.';
             go('page=account');
         }
-        if ($action==='scan') go('page=report&id='.saveUpload((int)$user['id']));
+        if ($action==='scan') go('page=report&id='.saveHashScan((int)$user['id'], $_POST));
         if ($action==='lookup') {
             $scan = ownScan((int)($_POST['id']??0),(int)$user['id']);
             $vt = vtLookup($scan['sha256']);
-            query('UPDATE scans SET vt_report=? WHERE id=? AND user_id=?',[jsonData($vt),$scan['id'],$user['id']]);
+            $previous = json_decode($scan['vt_report'] ?? 'null', true);
+            if (($previous['state'] ?? '') === 'available' && !in_array($vt['state'], ['available', 'not_found'], true)) {
+                $_SESSION['notice'] = vtStates()[$vt['state']];
+                go('page=report&id='.$scan['id']);
+            }
+            query('UPDATE scans SET vt_report=?, status=? WHERE id=? AND user_id=?',[jsonData($vt), vtStatus($vt),$scan['id'],$user['id']]);
             go('page=report&id='.$scan['id']);
         }
         if ($user['role']!=='admin') { http_response_code(403); throw new InputError('Chức năng dành cho quản trị viên.'); }
@@ -80,10 +84,7 @@ try {
             $_SESSION['notice'] = 'Đã lưu cài đặt.';
             go('page=admin&tab=settings');
         }
-        if (in_array($action,['rule_add','rule_toggle'],true)) changeRule($action);
-        elseif ($action==='vt_toggle') query('UPDATE settings SET vt_enabled=? WHERE id=1',[(int)(($_POST['enabled']??'')==='1')]);
-        else throw new InputError('Thao tác không hợp lệ.');
-        go('page=admin&tab=signatures');
+        throw new InputError('Thao tác không hợp lệ.');
     }
     if ($user) {
         if ($page==='admin' && $user['role']!=='admin') { http_response_code(403); throw new InputError('Chức năng dành cho quản trị viên.'); }
@@ -94,7 +95,7 @@ try {
             if ($page==='export') {
                 header('Content-Type: application/json; charset=utf-8');
                 header('Content-Disposition: attachment; filename="malwareguard-'.$scan['id'].'.json"');
-                echo jsonData(['file'=>$scan['filename'],'created_at'=>$scan['created_at'],'internal'=>$report,'virustotal'=>$vt]);
+                echo jsonData(['file'=>$scan['filename'],'created_at'=>$scan['created_at'],'sha256'=>$scan['sha256'],'size'=>$report['size'],'internal'=>isset($report['evidence']) ? $report : null,'virustotal'=>$vt]);
                 exit;
             }
         } elseif (in_array($page,['scanner','dashboard','history'],true)) {
@@ -104,14 +105,11 @@ try {
             $rows = query("SELECT id,filename,status,created_at,JSON_UNQUOTE(JSON_EXTRACT(report,'$.size')) AS bytes
                 FROM scans WHERE user_id=? ORDER BY id DESC LIMIT $limit OFFSET $offset",[$user['id']])->fetchAll();
             if ($page!=='scanner') {
-                $totals = query("SELECT COUNT(*) total, COALESCE(SUM(status='matched'),0) matched,
-                    COALESCE(SUM(status='partial'),0) partial FROM scans WHERE user_id=?",[$user['id']])->fetch();
+                $totals = query("SELECT COUNT(*) total, COALESCE(SUM(status='vt_flagged'),0) matched,
+                    COALESCE(SUM(status='not_found'),0) partial FROM scans WHERE user_id=?",[$user['id']])->fetch();
             }
         } elseif ($page==='admin' && $adminTab==='overview') {
             [$counts, $days] = siteStatistics();
-        } elseif ($page==='admin' && $adminTab==='signatures') {
-            $rules = query('SELECT * FROM signatures ORDER BY id DESC')->fetchAll();
-            $enabled = query('SELECT vt_enabled FROM settings WHERE id=1')->fetchColumn();
         } elseif (!in_array($page,['account','admin'],true)) { http_response_code(404); throw new InputError('Trang không tồn tại.'); }
     }
 } catch (InputError $e) {

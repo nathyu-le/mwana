@@ -13,3 +13,4 @@
         <button name="action" value="save_site"><?= e(t('Lưu cài đặt')) ?></button>
     </form>
 </section>
+<section class="card"><h2>VirusTotal</h2><p>API key · <?=e(t(empty(config()['vt_key']) ? 'Chưa cấu hình' : 'Đã cấu hình'))?></p></section>

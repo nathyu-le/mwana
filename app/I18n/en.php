@@ -1,5 +1,10 @@
 <?php
 return [
+    'Có cảnh báo' => 'Flagged by VirusTotal engines',
+    'Tên tệp hoặc SHA-256 không hợp lệ.' => 'Invalid filename or SHA-256.',
+    'Tối đa 2 MiB · Chỉ gửi SHA-256 đến VirusTotal' => 'Up to 2 MiB · Only the SHA-256 is sent to VirusTotal',
+    'Không đọc được tệp. Hãy dùng HTTPS và chọn lại tệp.' => 'Cannot read the file. Use HTTPS and select it again.',
+    'Bật JavaScript để tính SHA-256.' => 'Enable JavaScript to calculate SHA-256.',
     'Người đã quét' => 'Users who have scanned',
     'Thống kê toàn hệ thống' => 'System statistics',
     'Tổng lượt quét' => 'Total scans',

@@ -1,6 +1,15 @@
 <?php
 declare(strict_types=1);
 
+function vtStates(): array {
+    return ['available'=>'Có báo cáo','not_found'=>'Chưa có báo cáo cho hash này','disabled'=>'Tích hợp đang tắt','missing_key'=>'Chưa cấu hình API key','denied'=>'Lỗi xác thực hoặc quyền truy cập','rate_limit'=>'Đang chờ hạn mức','unavailable'=>'Dịch vụ hoặc dữ liệu không khả dụng'];
+}
+
+function vtStatus(array $vt): string {
+    if (($vt['stats']['malicious'] ?? 0) > 0 || ($vt['stats']['suspicious'] ?? 0) > 0) return 'vt_flagged';
+    return $vt['state'];
+}
+
 function vtDecode(int $http, string $body, string $hash): array {
     $result = ['source'=>'VirusTotal','queried_at'=>gmdate('c')];
     if ($http !== 200) {
@@ -36,11 +45,10 @@ function vtLookup(string $hash): array {
     $pdo = db();
     $pdo->beginTransaction();
     try {
-        $settings = query('SELECT vt_enabled,vt_next FROM settings WHERE id=1 FOR UPDATE')->fetch();
+        $settings = query('SELECT vt_next FROM settings WHERE id=1 FOR UPDATE')->fetch();
         $now = time();
         $cached = query('SELECT body FROM vt_cache WHERE sha256=? AND expires_at>?',[$hash,$now])->fetchColumn();
-        if (!$settings['vt_enabled']) $local = ['state'=>'disabled'];
-        elseif (!$key) $local = ['state'=>'missing_key'];
+        if (!$key) $local = ['state'=>'missing_key'];
         elseif ($cached!==false) $local = json_decode($cached,true,512,JSON_THROW_ON_ERROR)+['cached'=>true];
         elseif ($settings['vt_next']>$now) $local = ['state'=>'rate_limit','retry_at'=>gmdate('c',(int)$settings['vt_next'])];
         else query('UPDATE settings SET vt_next=? WHERE id=1',[$now+16]);
