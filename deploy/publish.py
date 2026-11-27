@@ -22,18 +22,13 @@ def install(source, target, mode):
 
 
 def publish(site, stage, revision):
-    project = site / "malwareguard_app"
-    web = site / "public_html/malwareguard"
+    project = site
     link = project / "public"
-    if link.is_symlink():
-        if link.resolve() != web.resolve():
-            raise RuntimeError("Unexpected project/public target")
-    elif link.exists():
-        raise RuntimeError("Existing project/public needs review")
-    else:
-        link.symlink_to(web, target_is_directory=True)
-
-    state = site / ".mg-deploy"
+    state = site.parent / ".malwareguard-deploy"
+    if not state.is_dir() or not link.is_dir() or link.is_symlink():
+        raise RuntimeError("Configure the domain's public directory before deploying")
+    if not (project / "config/local.php").is_file():
+        raise RuntimeError("Private site configuration is missing")
     files = sorted(p.relative_to(stage) for p in stage.rglob("*") if p.is_file())
     # Install the public entry point last. Old PHP requests can finish in their old release.
     index = Path("public/index.php")

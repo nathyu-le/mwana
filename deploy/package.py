@@ -6,23 +6,19 @@ import subprocess
 from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 ROOT = Path(__file__).resolve().parents[1]
-PRIVATE = Path("malwareguard_app")
-PUBLIC = Path("public_html/malwareguard")
 
 
 def package(output):
     listing = subprocess.check_output(
-        ["git", "ls-tree", "-r", "--name-only", "HEAD", "--",
-         "app", "bin", "config/example.php", "database", "public", "tests"],
+        ["git", "ls-tree", "-r", "--name-only", "HEAD"],
         cwd=ROOT, text=True,
     )
     with ZipFile(output, "w") as archive:
         for name in listing.splitlines():
             path = Path(name)
             public = path.parts[0] == "public"
-            target = PUBLIC / path.relative_to("public") if public else PRIVATE / path
             data = subprocess.check_output(["git", "show", f"HEAD:{name}"], cwd=ROOT)
-            member = ZipInfo(str(target))
+            member = ZipInfo(name)
             member.create_system = 3
             member.external_attr = (stat.S_IFREG | (0o644 if public else 0o600)) << 16
             archive.writestr(member, data, compress_type=ZIP_DEFLATED)
