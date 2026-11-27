@@ -1,11 +1,11 @@
-# MalwareGuard 1.1.0
+# MalwareGuard 1.2.0
 
 Website phân tích tĩnh cho đồ án Malware Analysis, xây dựng bằng PHP 8.1+ và MySQL/MariaDB. Người dùng đăng nhập để quét tệp, xem bằng chứng và xuất báo cáo JSON. Quản trị viên quản lý chữ ký và bật hoặc tắt tra cứu VirusTotal.
 
 ## Cài trên cPanel
 
 1. Chọn PHP 8.1 trở lên với PDO MySQL, fileinfo, ctype và cURL. Dùng HTTPS. Đặt `upload_max_filesize` từ 2M, `post_max_size` từ 4M và thư mục upload tạm bên ngoài webroot.
-2. Clone repo vào thư mục riêng, ví dụ `/home/ACCOUNT/malwareguard`. Trong **Domains**, trỏ Document Root của subdomain vào `/home/ACCOUNT/malwareguard/public`. Nếu host chỉ cho dùng `public_html`, chép toàn bộ nội dung `public/` (gồm CSS, JavaScript và logo) vào đó và đổi các đường dẫn `dirname(__DIR__).'/app/…'` trong `index.php` để trỏ tới thư mục app thật. Giữ config, database, bin và tests ngoài thư mục công khai.
+2. Clone repo vào thư mục riêng, ví dụ `/home/ACCOUNT/malwareguard`. Trong **Domains**, trỏ Document Root của subdomain vào `/home/ACCOUNT/malwareguard/public`. Nếu host chỉ cho dùng `public_html`, chép toàn bộ nội dung `public/` (gồm CSS, JavaScript và logo) vào đó và đổi dòng `require` duy nhất trong `index.php` để trỏ đến `app/Http/workspace.php` trong thư mục riêng. Giữ config, database, bin và tests ngoài thư mục công khai.
 3. Tạo database trống cùng database user trong **Manage My Databases**. Cấp quyền trên database đó. Import `database/schema.sql` một lần bằng phpMyAdmin.
 4. Chép `config/example.php` thành `config/local.php`. Điền tên database, user và mật khẩu của hosting. Có thể để trống `vt_key`.
 5. Mở Terminal của cPanel ở thư mục dự án. Dùng PHP CLI cùng phiên bản với website. Tạo tài khoản, nhập mật khẩu ở lời nhắc.
@@ -13,6 +13,27 @@ Website phân tích tĩnh cho đồ án Malware Analysis, xây dựng bằng PHP
 ~~~bash
 php bin/user.php admin@example.org admin
 php bin/user.php analyst@example.org analyst
+~~~
+
+## Cấu trúc giao diện
+
+- `public/index.php` nhận yêu cầu. `app/Http/workspace.php` xử lý điều hướng và phân quyền.
+- `app/Views/pages/` chứa trang đăng nhập, quét tệp, lịch sử, tổng quan, báo cáo, quản trị và trang lỗi.
+- `app/Views/partials/` chứa head, header, footer, hình quét và danh sách lịch sử dùng chung.
+- `public/assets/css/` chia kiểu cơ bản, giao diện làm việc, màn hình nhỏ và hiệu ứng. JavaScript nằm trong `public/assets/js/`, logo nằm trong `public/assets/img/`.
+
+## Đồng bộ thitruongmmo.com
+
+Hosting kiểm tra nhánh `main` mỗi 5 phút. Mỗi lần phát hành chạy test PHP, kiểm tra nội dung từng asset qua HTTPS rồi mới chuyển trang chủ sang commit mới. Nếu trang đăng nhập không vượt qua kiểm tra, script khôi phục index trước đó. Cấu hình riêng nằm ở `~/thitruongmmo.com/malwareguard_app/config/local.php`. Lịch sử triển khai nằm ở `~/thitruongmmo.com/.mg-deploy/deploy.log`.
+
+Để thiết lập lần đầu trên đúng tài khoản hosting của website:
+
+~~~bash
+cd ~/thitruongmmo.com
+mkdir -pm 700 .mg-deploy
+git clone https://github.com/nathyu-le/mwana.git .mg-deploy/source
+bash .mg-deploy/source/deploy/cpanel.sh
+bash .mg-deploy/source/deploy/install-cron.sh
 ~~~
 
 ## Chạy thử
