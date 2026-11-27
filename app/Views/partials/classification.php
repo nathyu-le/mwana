@@ -1,11 +1,16 @@
-<?php $classification = $vt['classification'] ?? []; ?>
-<section class="card">
-    <small>VirusTotal</small><h2><?=e(t('Nhận diện mã độc'))?></h2>
-    <?php foreach (['categories'=>'Loại mối đe dọa', 'families'=>'Họ mã độc'] as $key=>$label): ?>
-        <p><strong><?=e(t($label))?></strong> · <?=e(implode(', ', $classification[$key] ?? []) ?: t('Chưa xác định'))?></p>
-    <?php endforeach ?>
-    <?php if (!empty($classification['vendor_labels'])): ?>
-        <h3><?=e(t('Nhãn do từng công cụ cung cấp'))?></h3>
-        <?php evidenceTable($classification['vendor_labels'], ['name'=>'Engine','category'=>'Loại','result'=>'Tên phát hiện']); ?>
-    <?php endif ?>
-</section>
+<?php
+$tagGroups = [
+    'Mức nguy hiểm'=>$assessment['severity'] === 'Chưa xác định' ? [] : [$assessment['severity']],
+    'Loại mối đe dọa'=>$classification['categories'] ?? [],
+    'Họ mã độc'=>$classification['families'] ?? [],
+];
+foreach ($tagGroups as $label=>$values): if (!$values) continue; ?>
+<div class="threat-labels"><small><?=e(t($label))?></small>
+    <?php foreach ($values as $value): ?><span><?=e($label === 'Mức nguy hiểm' ? t($value) : $value)?></span><?php endforeach ?>
+</div>
+<?php endforeach ?>
+<?php if (!empty($classification['vendor_labels'])): ?>
+<div class="threat-labels vendor-labels"><small><?=e(t('Nhãn của công cụ'))?></small>
+    <?php foreach ($classification['vendor_labels'] as $entry): ?><span><?=e($entry['category'])?> <em>· <?=e($entry['name'])?></em></span><?php endforeach ?>
+</div>
+<?php endif ?>

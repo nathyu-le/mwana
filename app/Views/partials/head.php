@@ -9,6 +9,7 @@
     <?php foreach (['base', 'workspace', 'responsive', 'motion'] as $sheet): ?>
     <link rel="stylesheet" href="<?= asset("css/$sheet.css") ?>">
     <?php endforeach ?>
+    <?php if ($view === 'report'): ?><link rel="stylesheet" href="<?= asset('css/report.css') ?>"><?php endif ?>
     <script src="<?= asset('js/startup.js') ?>"></script>
 </head>
 <body>

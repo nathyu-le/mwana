@@ -1,0 +1,60 @@
+.file-report { --signal: #c0b3ff; max-width: 1150px; margin: auto }
+.report-path { font-size: 14px; margin: 0 0 18px; color: var(--muted) }
+.report-path a { color: inherit; margin-right: 4px }
+.report-title,.report-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px }
+.report-title { border-bottom: 1px solid var(--line); padding-bottom: 22px }
+.report-title h1 { display: flex; align-items: baseline; gap: 14px; min-width: 0; overflow-wrap: anywhere }
+.paper-glyph { width: .63em; height: .8em; flex: none; border: 2px solid #d8d9e2; border-radius: 3px; background: linear-gradient(45deg,transparent 44%,#d8d9e2 46% 53%,transparent 55%) right top / .25em .25em no-repeat }
+.report-title a,.report-actions a { white-space: nowrap; font-size: 14px }
+.report-hero { position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding: clamp(32px,4vw,64px) 0; isolation: isolate }
+.report-hero.danger { --signal: #ff9a9e }
+.report-hero.warning { --signal: #edbf71 }
+.verdict-copy { min-width: 0 }
+.verdict-source { display: inline-flex; align-items: center; gap: 9px; color: #bebdca; font-size: 15px; font-weight: 580 }
+.verdict-source i,.count-line i { width: 7px; height: 7px; border-radius: 50%; background: var(--signal) }
+.report-hero h2 { font-size: clamp(30px,3.8vw,58px); line-height: 1.12; letter-spacing: -.045em; margin: 12px 0 }
+.detection-ratio { color: #d2d1dc; font-size: clamp(17px,1.7vw,25px) }
+.count-line,.threat-labels { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; margin-top: 16px }
+.count-line span { display: inline-flex; align-items: center; gap: 7px; font-size: 14px; color: var(--muted) }
+.count-line .dot-mal { background: #e59b9f }
+.count-line .dot-sus { background: #dec18d }
+.threat-labels { gap: 6px; margin-top: 10px; font-size: 13px; overflow-wrap: anywhere }
+.threat-labels small { margin-right: 5px; font-size: inherit }
+.threat-labels span { max-width: 100%; background: #27252e; border: 1px solid #47414f; color: #e0dbea; border-radius: 5px; padding: 2px 8px }
+.vendor-labels em { font-style: normal; color: var(--muted) }
+.report-gauge { position: relative; width: clamp(174px,18vw,240px); aspect-ratio: 1; flex: none; margin: 0 2% 0 0 }
+.report-gauge svg { width: 100%; height: 100%; fill: none; stroke-width: 3 }
+.g-track { stroke: #454651 }
+.g-value,.g-tick { stroke: var(--signal) }
+.report-gauge figcaption { position: absolute; inset: 20% 10%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: var(--muted); font-size: clamp(10px,.95vw,13px) }
+.report-gauge b { font-size: clamp(38px,4.5vw,70px); line-height: 1.12; color: var(--ink); letter-spacing: -.06em; font-variant-numeric: tabular-nums }
+.report-gauge small { font-size: clamp(13px,1.4vw,21px); margin-left: 3px }
+.report-row { padding: 0; border-top: 1px solid var(--line) }
+.report-row > summary { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 18px 3px; font-weight: 560; font-size: 18px; list-style: none }
+.report-row > summary::-webkit-details-marker { display: none }
+.report-row > summary::after { content: ''; width: 8px; height: 8px; margin-right: 4px; border: solid #bbb9c9; border-width: 0 1.5px 1.5px 0; transform: rotate(45deg) }
+.report-row[open] > summary::after { transform: rotate(225deg) }
+.report-body { padding-bottom: 20px }
+.report-body .scroll { max-height: 440px; overflow: auto; margin: 0 0 12px }
+.report-body th { background: var(--bg); position: sticky; top: 0 }
+.report-meta > div { display: grid; grid-template-columns: minmax(80px,185px) 1fr; gap: 10px; padding: 5px 0; font-size: 14px }
+.report-meta code { min-width: 0 }
+.report-actions { padding-top: 18px; border-top: 1px solid var(--line) }
+.report-actions button { background: none; border: 0; padding: 2px 0; color: var(--muted); font-size: 14px }
+.review-row ul { padding-left: 22px; color: var(--muted) }
+@media (max-width: 620px) {
+  .report-title { align-items: start }
+  .report-hero { gap: 12px; flex-wrap: wrap; padding: 28px 0 }
+  .report-gauge { width: 142px; margin: 0 }
+  .report-hero h2 { font-size: 32px }
+  .report-meta > div { grid-template-columns: 1fr; gap: 2px }
+  .report-row > summary { font-size: 16px }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .report-hero::after { content: ''; pointer-events: none; z-index: -1; position: absolute; inset: 0; background: linear-gradient(105deg,transparent 36%,#b6afff0e 49%,transparent 57%); animation: report-sweep 1.25s ease-out both }
+  .report-gauge svg { animation: dial-in .95s cubic-bezier(.18,.7,.23,1) both; transform-origin: center }
+  .threat-labels span,.report-row[open] > .report-body { animation: evidence-in .3s ease-out both }
+  @keyframes report-sweep { from { transform: translateX(-105%) } to { transform: translateX(105%) } }
+  @keyframes dial-in { from { transform: rotate(-95deg); opacity: .2 } to { transform: rotate(0); opacity: 1 } }
+  @keyframes evidence-in { from { transform: translateY(4px); opacity: .2 } to { transform: none; opacity: 1 } }
+}

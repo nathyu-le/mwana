@@ -1,5 +1,13 @@
 <?php
 return [
+    'Kết quả từng công cụ' => 'Results by engine',
+    'Chưa ghi nhận cảnh báo' => 'No detections reported',
+    '%d trên %d công cụ báo độc' => '%d of %d engines flagged this file as malicious',
+    'độc hại' => 'malicious', 'đáng ngờ' => 'suspicious',
+    'Thông tin tệp' => 'File details', 'Kích thước' => 'Size',
+    'Tra cứu lần cuối' => 'Last lookup', 'Bộ nhớ đệm' => 'Cached',
+    'Tra cứu lại' => 'Look up again', 'Xem trên VirusTotal' => 'View on VirusTotal',
+    'Nhãn của công cụ' => 'Engine labels', 'Mức nguy hiểm' => 'Severity', 'Thử lại sau' => 'Retry after',
     'VirusTotal đánh giá là độc hại' => 'VirusTotal classifies this file as malicious',
     'VirusTotal đánh giá là đáng ngờ' => 'VirusTotal classifies this file as suspicious',
     'VirusTotal chưa phát hiện dấu hiệu độc hại' => 'VirusTotal has not detected malicious activity',
