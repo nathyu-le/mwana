@@ -2,12 +2,14 @@
 declare(strict_types=1);
 
 require_once __DIR__.'/Reports/classification.php';
+require_once __DIR__.'/Reports/assessment.php';
 
 function vtStates(): array {
     return ['available'=>'Có báo cáo','not_found'=>'Chưa có báo cáo cho hash này','disabled'=>'Tích hợp đang tắt','missing_key'=>'Chưa cấu hình API key','denied'=>'Lỗi xác thực hoặc quyền truy cập','rate_limit'=>'Đang chờ hạn mức','unavailable'=>'Dịch vụ hoặc dữ liệu không khả dụng'];
 }
 
 function vtStatus(array $vt): string {
+    if (in_array($vt['signals']['verdict'] ?? null, ['VERDICT_MALICIOUS','VERDICT_SUSPICIOUS'], true)) return 'vt_flagged';
     if (($vt['stats']['malicious'] ?? 0) > 0 || ($vt['stats']['suspicious'] ?? 0) > 0) return 'vt_flagged';
     return $vt['state'];
 }
@@ -38,7 +40,7 @@ function vtDecode(int $http, string $body, string $hash): array {
         ];
     }
     $time = $attr['last_analysis_date']??null;
-    return $result+['state'=>'available','classification'=>vtClassification($attr, $engines),'stats'=>$stats,'engines'=>$engines,'analysis_at'=>is_int($time)?gmdate('c',$time):null];
+    return $result+['state'=>'available','signals'=>vtSignals($attr),'classification'=>vtClassification($attr, $engines),'stats'=>$stats,'engines'=>$engines,'analysis_at'=>is_int($time)?gmdate('c',$time):null];
 }
 
 function vtLookup(string $hash): array {
@@ -50,8 +52,10 @@ function vtLookup(string $hash): array {
         $settings = query('SELECT vt_next FROM settings WHERE id=1 FOR UPDATE')->fetch();
         $now = time();
         $cached = query('SELECT body FROM vt_cache WHERE sha256=? AND expires_at>?',[$hash,$now])->fetchColumn();
+        $previous = $cached === false ? null : json_decode($cached, true);
+        $usable = ($previous['state'] ?? '') === 'not_found' || isset($previous['classification'], $previous['signals']);
         if (!$key) $local = ['state'=>'missing_key'];
-        elseif ($cached!==false) $local = json_decode($cached,true,512,JSON_THROW_ON_ERROR)+['cached'=>true];
+        elseif ($usable) $local = $previous+['cached'=>true];
         elseif ($settings['vt_next']>$now) $local = ['state'=>'rate_limit','retry_at'=>gmdate('c',(int)$settings['vt_next'])];
         else query('UPDATE settings SET vt_next=? WHERE id=1',[$now+16]);
         $pdo->commit();

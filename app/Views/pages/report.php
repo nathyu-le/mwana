@@ -6,6 +6,7 @@ function evidenceTable(array $rows,array $columns): void { ?>
 ?>
 <div class="heading"><div><span class="eyebrow"><?= e(t('BÁO CÁO')) ?> #<?=(int)$scan['id']?></span><h1><?=e($scan['filename'])?></h1></div>
 <a class="button secondary" href="?page=export&amp;id=<?=(int)$scan['id']?>"><?= e(t('Tải JSON')) ?> ↓</a></div>
+<?php require dirname(__DIR__).'/partials/assessment.php'; ?>
 <?php if (($vt['state'] ?? '') === 'available') require dirname(__DIR__).'/partials/classification.php'; ?>
 <section class="card"><div class="hash"><small>SHA-256</small><code><?=e($scan['sha256'])?></code></div></section>
 <section class="card"><small><?= e(t('ĐỐI CHIẾU BÊN NGOÀI')) ?></small><h2>VirusTotal</h2><p><?= e(t('Tra cứu gửi SHA-256 để lấy báo cáo có sẵn.')) ?></p>
@@ -15,6 +16,8 @@ function evidenceTable(array $rows,array $columns): void { ?>
 <?php if ($vt['state']==='available'): ?><p><?= e(t('Thời điểm phân tích của VirusTotal')) ?> · <?=e($vt['analysis_at']??t('Không có dữ liệu'))?></p>
 <?php $stats=[]; foreach ($vt['stats'] as $k=>$v) $stats[]=['category'=>$k,'count'=>$v??t('Không có dữ liệu')]; evidenceTable($stats,['category'=>'Phân loại','count'=>'Số engine']);
 if ($vt['engines']): ?><details><summary><?= e(t('Kết quả từng engine')) ?></summary><?php $engineRows=[]; foreach ($vt['engines'] as $n=>$v) $engineRows[]=['name'=>$n]+$v;
+$rank = ['malicious'=>0, 'suspicious'=>1];
+usort($engineRows, static fn($a,$b)=>($rank[$a['category']] ?? 2) <=> ($rank[$b['category']] ?? 2));
 evidenceTable($engineRows,['name'=>'Engine','category'=>'Phân loại','result'=>'Tên phát hiện']); ?></details><?php endif; endif; endif ?>
 <form method="post"><?=token()?><input type="hidden" name="id" value="<?=(int)$scan['id']?>"><button name="action" value="lookup"><?= e(t('Tra cứu SHA-256')) ?></button></form></section>
 

@@ -36,7 +36,7 @@
 .record small { font-size: clamp(12px,1.2vw,17px); margin-top: 2px }
 .status { display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; color: #cccad7 }
 .status::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #9a9ba9; flex: none }
-.status.matched::before { background: #ffbb70 }
+.status.vt_flagged::before,.status.matched::before { background: #ffbb70 }
 .status.partial::before { background: #c4acee }
 .chevron { font-size: 23px; color: #c9c8d3; justify-self: end }
 .empty { padding: 22px 0; border-bottom: 1px solid var(--line) }

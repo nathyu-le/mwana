@@ -95,7 +95,7 @@ try {
             if ($page==='export') {
                 header('Content-Type: application/json; charset=utf-8');
                 header('Content-Disposition: attachment; filename="malwareguard-'.$scan['id'].'.json"');
-                echo jsonData(['file'=>$scan['filename'],'created_at'=>$scan['created_at'],'sha256'=>$scan['sha256'],'size'=>$report['size'],'internal'=>isset($report['evidence']) ? $report : null,'virustotal'=>$vt]);
+                echo jsonData(['file'=>$scan['filename'],'created_at'=>$scan['created_at'],'sha256'=>$scan['sha256'],'size'=>$report['size'],'internal'=>isset($report['evidence']) ? $report : null,'virustotal'=>$vt,'assessment'=>assessVirusTotal($vt)]);
                 exit;
             }
         } elseif (in_array($page,['scanner','dashboard','history'],true)) {
