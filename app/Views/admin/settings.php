@@ -1,3 +1,10 @@
+<section class="card vt-connection">
+    <div><h2>VirusTotal API</h2>
+        <p class="connection-state"><i class="lamp-<?=e($indicator[0])?>" aria-hidden="true"></i><?=e(t($indicator[1]))?></p>
+        <?php if ($indicator[2] !== null): ?><small><?=e(t('Kiểm tra lần cuối'))?> · <time><?=e(gmdate('Y-m-d H:i', $indicator[2]))?> UTC</time></small><?php endif ?>
+    </div>
+    <?php if (!empty(config()['vt_key'])): ?><form method="post"><?=token()?><button class="secondary" name="action" value="test_vt"><?=e(t('Kiểm tra kết nối'))?></button></form><?php endif ?>
+</section>
 <section class="card"><h2><?= e(t('Cài đặt website')) ?></h2>
     <form class="fields" method="post">
         <?= token() ?>
@@ -13,4 +20,3 @@
         <button name="action" value="save_site"><?= e(t('Lưu cài đặt')) ?></button>
     </form>
 </section>
-<section class="card"><h2>VirusTotal</h2><p>API key · <?=e(t(empty(config()['vt_key']) ? 'Chưa cấu hình' : 'Đã cấu hình'))?></p></section>

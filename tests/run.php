@@ -36,3 +36,12 @@ foreach ([[], ['undetected'=>4], ['malicious'=>0,'suspicious'=>0,'undetected'=>0
 }
 check(assessVirusTotal(['state'=>'not_found'])['severity'] === 'Chưa xác định','unknown file has no severity');
 check(assessVirusTotal(['stats'=>['malicious'=>0,'suspicious'=>0,'harmless'=>0,'undetected'=>40]])['detection_score'] === 0,'genuine zero is preserved');
+require dirname(__DIR__).'/app/Admin/connection.php';
+$key = 'test-only';
+$row = ['key_fingerprint'=>hash('sha256', $key), 'observed_at'=>10000];
+foreach (['available'=>'green','not_found'=>'green','rate_limit'=>'amber','denied'=>'red','unavailable'=>'red'] as $state=>$color) {
+    check(vtConnectionIndicator($key, $row+['state'=>$state], 10001)[0] === $color, 'VT indicator '.$state);
+}
+check(vtConnectionIndicator('', null, 10000)[0] === 'red', 'absent key is off');
+check(vtConnectionIndicator('changed-key', $row, 10001)[0] === 'amber', 'changed key needs verification');
+check(vtConnectionIndicator($key, $row, 20000)[0] === 'amber', 'stale result needs verification');

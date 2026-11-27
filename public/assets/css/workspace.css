@@ -84,3 +84,9 @@ input:not([type=file]),select { background: #101115; border: 1px solid #484955; 
 .site-footer,.language-form,.language-form label { display: flex; align-items: center; flex-wrap: wrap; gap: 12px }
 .site-footer { justify-content: space-between }
 .language-form select { margin-left: 5px }
+.vt-connection { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between }
+.vt-connection .connection-state { display: flex; align-items: center; gap: 9px; color: var(--ink); margin: 8px 0 3px }
+.connection-state i { width: 9px; height: 9px; background: currentColor; border-radius: 50%; box-shadow: 0 0 0 3px color-mix(in srgb,currentColor 14%,transparent) }
+.lamp-green { color: #74dfac }
+.lamp-red { color: #ff8e92 }
+.lamp-amber { color: #e9b96e }

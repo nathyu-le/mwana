@@ -1,5 +1,10 @@
 <?php
 return [
+    'Tắt · chưa có API key' => 'Off · no API key', 'Đang hoạt động' => 'Connected',
+    'Đã cấu hình · chưa kiểm tra' => 'Configured · not yet checked',
+    'Cần kiểm tra lại' => 'Check connection again', 'API từ chối truy cập' => 'API access denied',
+    'Không kết nối được' => 'Connection failed', 'Kiểm tra lần cuối' => 'Last checked',
+    'Kiểm tra kết nối' => 'Test connection',
     'Kết quả từng công cụ' => 'Results by engine',
     'Chưa ghi nhận cảnh báo' => 'No detections reported',
     '%d trên %d công cụ báo độc' => '%d of %d engines flagged this file as malicious',

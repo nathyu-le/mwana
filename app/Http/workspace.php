@@ -11,6 +11,7 @@ require dirname(__DIR__).'/bootstrap.php';
 require dirname(__DIR__).'/Actions.php';
 require dirname(__DIR__).'/Accounts/passwords.php';
 require dirname(__DIR__).'/Admin/settings.php';
+require dirname(__DIR__).'/Admin/connection.php';
 require dirname(__DIR__).'/I18n/locale.php';
 require dirname(__DIR__).'/Admin/statistics.php';
 require dirname(__DIR__).'/VirusTotal.php';
@@ -79,6 +80,11 @@ try {
             go('page=report&id='.$scan['id']);
         }
         if ($user['role']!=='admin') { http_response_code(403); throw new InputError('Chức năng dành cho quản trị viên.'); }
+        if ($action === 'test_vt') {
+            $probe = vtLookup(hash('sha256', 'hello'), true);
+            if ($probe['state'] === 'rate_limit') $_SESSION['notice'] = 'Đang chờ hạn mức';
+            go('page=admin&tab=settings');
+        }
         if ($action === 'save_site') {
             saveSiteSettings($_POST);
             $_SESSION['notice'] = 'Đã lưu cài đặt.';
@@ -108,6 +114,9 @@ try {
                 $totals = query("SELECT COUNT(*) total, COALESCE(SUM(status='vt_flagged'),0) matched,
                     COALESCE(SUM(status='not_found'),0) partial FROM scans WHERE user_id=?",[$user['id']])->fetch();
             }
+        } elseif ($page==='admin' && $adminTab==='settings') {
+            $last = query('SELECT key_fingerprint,state,observed_at FROM vt_connection WHERE id=1')->fetch();
+            $indicator = vtConnectionIndicator(config()['vt_key'] ?? '', $last ?: null, time());
         } elseif ($page==='admin' && $adminTab==='overview') {
             [$counts, $days] = siteStatistics();
         } elseif (!in_array($page,['account','admin'],true)) { http_response_code(404); throw new InputError('Trang không tồn tại.'); }

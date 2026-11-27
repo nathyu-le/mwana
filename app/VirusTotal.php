@@ -43,7 +43,7 @@ function vtDecode(int $http, string $body, string $hash): array {
     return $result+['state'=>'available','signals'=>vtSignals($attr),'classification'=>vtClassification($attr, $engines),'stats'=>$stats,'engines'=>$engines,'analysis_at'=>is_int($time)?gmdate('c',$time):null];
 }
 
-function vtLookup(string $hash): array {
+function vtLookup(string $hash, bool $refresh = false): array {
     if (!preg_match('/^[0-9a-f]{64}$/D',$hash)) throw new InvalidArgumentException('Invalid SHA-256');
     $key = config()['vt_key']??'';
     $pdo = db();
@@ -55,7 +55,7 @@ function vtLookup(string $hash): array {
         $previous = $cached === false ? null : json_decode($cached, true);
         $usable = ($previous['state'] ?? '') === 'not_found' || isset($previous['classification'], $previous['signals']);
         if (!$key) $local = ['state'=>'missing_key'];
-        elseif ($usable) $local = $previous+['cached'=>true];
+        elseif (!$refresh && $usable) $local = $previous+['cached'=>true];
         elseif ($settings['vt_next']>$now) $local = ['state'=>'rate_limit','retry_at'=>gmdate('c',(int)$settings['vt_next'])];
         else query('UPDATE settings SET vt_next=? WHERE id=1',[$now+16]);
         $pdo->commit();
@@ -84,6 +84,13 @@ function vtLookup(string $hash): array {
     $ok = curl_exec($c);
     $http = $ok===false ? 0 : (int)curl_getinfo($c,CURLINFO_RESPONSE_CODE);
     $report = vtDecode($http,$body,$hash);
+    $connectionState = $report['state'];
+    if ($http === 404 && (json_decode($body, true)['error']['code'] ?? '') !== 'NotFoundError') {
+        $connectionState = 'unavailable';
+    }
+    query('INSERT INTO vt_connection (id,key_fingerprint,state,observed_at) VALUES (1,?,?,?)
+        ON DUPLICATE KEY UPDATE key_fingerprint=VALUES(key_fingerprint),state=VALUES(state),observed_at=VALUES(observed_at)',
+        [hash('sha256', $key), $connectionState, time()]);
     if ($http===429) {
         $until = time()+$retry;
         query('UPDATE settings SET vt_next=GREATEST(vt_next,?) WHERE id=1',[$until]);
