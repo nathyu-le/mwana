@@ -4,9 +4,9 @@ export PATH="/usr/local/cpanel/3rdparty/lib/path-bin:/usr/local/bin:/usr/bin:/bi
 export GIT_TERMINAL_PROMPT=0
 umask 077
 site="$HOME/thitruongmmo.com"
-state="$site/.mg-deploy"
+state="$HOME/.malwareguard-deploy"
 source_dir="$state/source"
-config="$site/malwareguard_app/config/local.php"
+config="$site/config/local.php"
 [[ -r "$config" && -d "$source_dir/.git" ]]
 exec 9>"$state/lock"
 flock -n 9 || exit 0
