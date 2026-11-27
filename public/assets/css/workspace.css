@@ -81,3 +81,6 @@ input:not([type=file]),select { background: #101115; border: 1px solid #484955; 
 .stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 12px; margin: 16px 0 28px }
 .stat-grid .card { margin: 0; padding: 16px }
 .stat-grid strong { display: block; font-size: 30px; font-variant-numeric: tabular-nums }
+.site-footer,.language-form,.language-form label { display: flex; align-items: center; flex-wrap: wrap; gap: 12px }
+.site-footer { justify-content: space-between }
+.language-form select { margin-left: 5px }

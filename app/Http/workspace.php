@@ -12,6 +12,7 @@ require dirname(__DIR__).'/Analysis/Scanner.php';
 require dirname(__DIR__).'/Actions.php';
 require dirname(__DIR__).'/Accounts/passwords.php';
 require dirname(__DIR__).'/Admin/settings.php';
+require dirname(__DIR__).'/I18n/locale.php';
 require dirname(__DIR__).'/Admin/statistics.php';
 require dirname(__DIR__).'/VirusTotal.php';
 
@@ -26,11 +27,14 @@ $adminTabs = ['overview'=>'Thống kê', 'settings'=>'Cài đặt', 'signatures'
 $selectedTab = $_GET['tab'] ?? 'overview';
 $adminTab = is_string($selectedTab) && isset($adminTabs[$selectedTab]) ? $selectedTab : 'overview';
 $settings = ['site_name'=>'MalwareGuard', 'registration_open'=>false];
+$locale = 'vi';
+$choice = '';
 $error = null;
 $notice = $_SESSION['notice'] ?? null;
 unset($_SESSION['notice']);
 try {
     $settings = readSiteSettings();
+    [$locale, $choice] = selectLanguage($settings, $user);
     if (!$user && $page === 'register' && !$settings['registration_open']) {
         $page = 'login';
         throw new InputError('Website đang tạm đóng đăng ký.');
@@ -38,6 +42,10 @@ try {
     if ($_SERVER['REQUEST_METHOD']==='POST') {
         if (!hash_equals($_SESSION['csrf'],(string)($_POST['csrf']??''))) throw new InputError('Phiên gửi biểu mẫu đã hết hạn. Tải lại trang.');
         $action = $_POST['action']??'';
+        if ($action === 'set_language') {
+            saveLanguage($user, $_POST['locale'] ?? null);
+            go('page='.($user ? 'account' : ($page === 'register' ? 'register' : 'login')));
+        }
         if (!$user) {
             if ($action === 'register') {
                 if (!$settings['registration_open']) throw new InputError('Website đang tạm đóng đăng ký.');

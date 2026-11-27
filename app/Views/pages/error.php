@@ -1,1 +1,1 @@
-<a class="button secondary" href="?page=scanner">Quay lại trình quét</a>
+<a class="button secondary" href="?page=scanner"><?= e(t('Quay lại trình quét')) ?></a>

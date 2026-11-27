@@ -23,7 +23,7 @@
     const file = input.files[0];
     if (!file) return;
     if (!file.size || file.size > 2 * 1024 * 1024) {
-      reset('Chọn một tệp từ 1 byte đến 2 MiB.');
+      reset(form.dataset.size);
       return;
     }
     form.requestSubmit();
@@ -33,7 +33,7 @@
     sending = true;
     form.classList.add('busy');
     form.setAttribute('aria-busy', 'true');
-    title.textContent = 'Đang quét tệp…';
+    title.textContent = form.dataset.scanning;
     hint.textContent = input.files[0].name;
   });
   input.addEventListener('change', scan);
@@ -45,16 +45,16 @@
       if (type === 'dragenter') {
         dragDepth++;
         form.classList.add('dragging');
-        title.textContent = 'Thả để quét tệp';
+        title.textContent = form.dataset.drop;
       } else if (type === 'dragleave') {
         dragDepth = Math.max(0, dragDepth - 1);
         if (!dragDepth) { form.classList.remove('dragging'); title.textContent = defaultTitle; }
       } else if (type === 'drop') {
         dragDepth = 0;
         form.classList.remove('dragging');
-        if (event.dataTransfer.files.length !== 1) { reset('Mỗi lượt quét nhận một tệp.'); return; }
+        if (event.dataTransfer.files.length !== 1) { reset(form.dataset.single); return; }
         try { input.files = event.dataTransfer.files; }
-        catch { reset('Dùng nút Chọn tệp để tiếp tục.'); return; }
+        catch { reset(form.dataset.picker); return; }
         scan();
       }
     });
