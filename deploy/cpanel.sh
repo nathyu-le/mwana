@@ -25,8 +25,8 @@ trap 'rm -rf -- "$work"' EXIT
 mkdir "$work/release"
 git -C "$source_dir" archive "$revision" | tar -x -C "$work/release"
 cd "$work/release"
-find app public bin config tests -type f -name '*.php' -exec php -l '{}' \; > "$work/lint"
-if grep -q 'Errors parsing' "$work/lint"; then exit 1; fi
+find app public bin config tests -type f -name '*.php' -print0 > "$work/php-files"
+while IFS= read -r -d '' file; do php -l "$file" >/dev/null; done < "$work/php-files"
 php tests/run.php
 ln -s "$config" config/local.php
 if [[ ! -d "$release" ]]; then mv "$work/release" "$release"; fi
@@ -42,11 +42,13 @@ if [[ ! -d "$assets/$revision" ]]; then
     find "$work/assets" -type f -exec chmod 644 '{}' +
     mv "$work/assets" "$assets/$revision"
 fi
+find public/assets -type f -print0 > "$work/asset-files"
+[[ -s "$work/asset-files" ]]
 while IFS= read -r -d '' file; do
     url="$site_url/assets/$revision/${file#public/assets/}"
     curl -fsS --max-time 20 "$url" -o "$work/check"
     cmp "$file" "$work/check"
-done < <(find public/assets -type f -print0)
+done < "$work/asset-files"
 
 cp "$public/index.php" "$work/previous.php"
 if [[ ! -f "$state/original-index.php" ]]; then cp "$work/previous.php" "$state/original-index.php"; fi

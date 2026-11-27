@@ -10,8 +10,8 @@
 .dragging .beam,.busy .beam { animation-duration: .95s }
 .booting { overflow: hidden }
 .booting .splash { position: fixed; display: grid; place-items: center; inset: 0; z-index: 20; background: var(--bg); opacity: 1; transition: opacity 220ms ease }
-.booting .topbar,.booting .workspace { visibility: hidden }
-.booting.revealing .topbar,.booting.revealing .workspace { visibility: visible }
+.booting .topbar,.booting .workspace,.booting .site-footer { visibility: hidden }
+.booting.revealing .topbar,.booting.revealing .workspace,.booting.revealing .site-footer { visibility: visible }
 .booting.revealing .splash { opacity: 0; pointer-events: none }
 .splash-mark { position: relative; width: 128px; mask: url(../img/mark.svg) center/contain no-repeat }
 .splash-mark img { display: block; width: 100%; height: auto }

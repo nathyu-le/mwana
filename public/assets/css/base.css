@@ -44,3 +44,4 @@ nav a[aria-current]::after { content: ""; height: 3px; position: absolute; inset
 .secondary,.quiet { border-color: #484955; background: #24252d; color: var(--ink) }
 .secondary:hover,.quiet:hover { color: #fff }
 .dropzone,.login-panel,.card,.metrics { border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(115deg,#1d1e25,#17181d); box-shadow: inset 0 1px 0 #ffffff08 }
+.site-footer { width: var(--width); margin: 0 auto 24px; color: var(--muted); font-size: 12px }
