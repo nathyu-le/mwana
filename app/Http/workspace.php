@@ -10,21 +10,29 @@ header("Content-Security-Policy: default-src 'self'; object-src 'none'; base-uri
 require dirname(__DIR__).'/bootstrap.php';
 require dirname(__DIR__).'/Analysis/Scanner.php';
 require dirname(__DIR__).'/Actions.php';
+require dirname(__DIR__).'/Accounts/passwords.php';
 require dirname(__DIR__).'/VirusTotal.php';
 
 $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
 function token(): string { return '<input type="hidden" name="csrf" value="'.e($_SESSION['csrf']).'">'; }
 $labels = ['matched'=>'Khớp chữ ký','unmatched'=>'Chưa khớp','partial'=>'Chưa hoàn tất'];
-$pages = ['dashboard'=>'Tổng quan','scanner'=>'Trình quét','history'=>'Lịch sử','admin'=>'Chữ ký','report'=>'Báo cáo'];
+$pages = ['dashboard'=>'Tổng quan','scanner'=>'Trình quét','history'=>'Lịch sử','admin'=>'Chữ ký','report'=>'Báo cáo','register'=>'Tạo tài khoản','login'=>'Đăng nhập'];
 $user = $_SESSION['user']??null;
 $requestedPage = $_GET['page'] ?? 'scanner';
-$page = $user ? (is_string($requestedPage) ? $requestedPage : '') : 'login';
+$page = $user ? (is_string($requestedPage) ? $requestedPage : '') : ($requestedPage === 'register' ? 'register' : 'login');
 $error = null;
+$notice = $_SESSION['notice'] ?? null;
+unset($_SESSION['notice']);
 try {
     if ($_SERVER['REQUEST_METHOD']==='POST') {
         if (!hash_equals($_SESSION['csrf'],(string)($_POST['csrf']??''))) throw new InputError('Phiên gửi biểu mẫu đã hết hạn. Tải lại trang.');
         $action = $_POST['action']??'';
         if (!$user) {
+            if ($action === 'register') {
+                registerAccount($_POST);
+                $_SESSION['notice'] = 'Tài khoản đã tạo. Bạn có thể đăng nhập.';
+                go('page=login');
+            }
             if ($action!=='login') throw new InputError('Đăng nhập để tiếp tục.');
             $row = query('SELECT id,email,role,password_hash FROM users WHERE email=?',[trim($_POST['email']??'')])->fetch();
             if (!$row || !password_verify($_POST['password']??'',$row['password_hash'])) throw new InputError('Email hoặc mật khẩu chưa đúng.');
