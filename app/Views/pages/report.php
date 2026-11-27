@@ -6,6 +6,7 @@ function evidenceTable(array $rows,array $columns): void { ?>
 ?>
 <div class="heading"><div><span class="eyebrow"><?= e(t('BÁO CÁO')) ?> #<?=(int)$scan['id']?></span><h1><?=e($scan['filename'])?></h1></div>
 <a class="button secondary" href="?page=export&amp;id=<?=(int)$scan['id']?>"><?= e(t('Tải JSON')) ?> ↓</a></div>
+<?php if (($vt['state'] ?? '') === 'available') require dirname(__DIR__).'/partials/classification.php'; ?>
 <section class="card"><div class="hash"><small>SHA-256</small><code><?=e($scan['sha256'])?></code></div></section>
 <section class="card"><small><?= e(t('ĐỐI CHIẾU BÊN NGOÀI')) ?></small><h2>VirusTotal</h2><p><?= e(t('Tra cứu gửi SHA-256 để lấy báo cáo có sẵn.')) ?></p>
 <?php if ($vt): $states=vtStates(); ?>

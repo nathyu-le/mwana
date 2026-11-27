@@ -1,5 +1,10 @@
 <?php
 return [
+    'Nhận diện mã độc' => 'Malware identification',
+    'Loại mối đe dọa' => 'Threat type',
+    'Họ mã độc' => 'Malware family',
+    'Chưa xác định' => 'Unknown',
+    'Nhãn do từng công cụ cung cấp' => 'Labels reported by individual engines',
     'Có cảnh báo' => 'Flagged by VirusTotal engines',
     'Tên tệp hoặc SHA-256 không hợp lệ.' => 'Invalid filename or SHA-256.',
     'Tối đa 2 MiB · Chỉ gửi SHA-256 đến VirusTotal' => 'Up to 2 MiB · Only the SHA-256 is sent to VirusTotal',

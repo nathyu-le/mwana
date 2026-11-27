@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__.'/Reports/classification.php';
+
 function vtStates(): array {
     return ['available'=>'Có báo cáo','not_found'=>'Chưa có báo cáo cho hash này','disabled'=>'Tích hợp đang tắt','missing_key'=>'Chưa cấu hình API key','denied'=>'Lỗi xác thực hoặc quyền truy cập','rate_limit'=>'Đang chờ hạn mức','unavailable'=>'Dịch vụ hoặc dữ liệu không khả dụng'];
 }
@@ -36,7 +38,7 @@ function vtDecode(int $http, string $body, string $hash): array {
         ];
     }
     $time = $attr['last_analysis_date']??null;
-    return $result+['state'=>'available','stats'=>$stats,'engines'=>$engines,'analysis_at'=>is_int($time)?gmdate('c',$time):null];
+    return $result+['state'=>'available','classification'=>vtClassification($attr, $engines),'stats'=>$stats,'engines'=>$engines,'analysis_at'=>is_int($time)?gmdate('c',$time):null];
 }
 
 function vtLookup(string $hash): array {
