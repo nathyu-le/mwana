@@ -1,0 +1,46 @@
+:root {
+  color-scheme: dark;
+  --bg: #101115;
+  --panel: #191a20;
+  --line: #393a44;
+  --ink: #f3f3f7;
+  --muted: #adaeba;
+  --accent: #b6afff;
+  --width: min(77.4%, 1230px);
+}
+* { box-sizing: border-box }
+body { margin: 0; min-height: 100vh; background: radial-gradient(ellipse at 65% 24%, #16171d 0, transparent 64%), var(--bg); color: var(--ink); font: 16px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif }
+h1,h2,h3,p { margin: 0 }
+h1,h2,h3,.brand { letter-spacing: -.035em }
+h1 { font-size: clamp(32px,2.8vw,45px); line-height: 1.16; overflow-wrap: anywhere }
+h2 { font-size: clamp(23px,2.2vw,35px); line-height: 1.25 }
+h3 { font-size: 19px }
+a { color: var(--accent); text-decoration: none }
+a:hover { color: #d8d4ff }
+small,p,label { color: var(--muted) }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px }
+.topbar { border-bottom: 1px solid var(--line); background: #0d0e11 }
+.bar-inner { margin: auto; width: min(90%,1570px); min-height: 64px; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 20px }
+.brand { display: inline-flex; align-items: center; gap: 10px; width: fit-content; color: var(--ink); font-size: clamp(18px,1.55vw,25px); font-weight: 680 }
+.brand:hover { color: white }
+.brand img { width: clamp(33px,3.1vw,50px); height: auto }
+nav { display: flex; align-self: stretch; gap: clamp(25px,4vw,66px) }
+nav a { display: flex; align-items: center; position: relative; font-weight: 550; color: var(--muted); white-space: nowrap }
+nav a[aria-current] { color: var(--ink) }
+nav a[aria-current]::after { content: ""; height: 3px; position: absolute; inset: auto 0 0; background: var(--accent) }
+.account { justify-self: end; position: relative; z-index: 3 }
+.account summary { list-style: none; width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; cursor: pointer; background: linear-gradient(145deg,#353640,#24252d); border: 1px solid #42434f; font-size: 14px; font-weight: 600 }
+.account summary::-webkit-details-marker { display: none }
+.menu { position: absolute; right: 0; top: calc(100% + 10px); width: max-content; max-width: 82vw; min-width: 190px; padding: 16px; border-radius: 10px; border: 1px solid var(--line); background: #202128; box-shadow: 0 12px 32px #0008 }
+.menu strong,.menu small,.menu a { display: block; overflow-wrap: anywhere }
+.menu a { border-top: 1px solid var(--line); margin-top: 12px; padding-top: 12px }
+.menu button { padding: 7px 0 0; background: transparent; border: 0; color: var(--ink); min-height: 32px; font-size: 15px }
+.workspace { width: var(--width); margin: clamp(30px,3.1vw,52px) auto 72px }
+.heading,.section-head,.pager { display: flex; align-items: center; justify-content: space-between; gap: 18px }
+.heading { margin-bottom: 26px }
+.heading>div { min-width: 0 }
+.button,button,.picker { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 43px; padding: 9px 18px; border: 1px solid #c0baff; border-radius: 7px; color: #171526; background: linear-gradient(135deg,#c2bdff,#a9a1f7); line-height: 1.35; font-family: inherit; font-size: 15px; font-weight: 600; cursor: pointer }
+.button:hover,button:hover,.picker:hover { color: #161421; filter: brightness(1.07) }
+.secondary,.quiet { border-color: #484955; background: #24252d; color: var(--ink) }
+.secondary:hover,.quiet:hover { color: #fff }
+.dropzone,.login-panel,.card,.metrics { border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(115deg,#1d1e25,#17181d); box-shadow: inset 0 1px 0 #ffffff08 }
