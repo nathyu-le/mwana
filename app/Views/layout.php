@@ -7,7 +7,7 @@ function asset(string $file): string
     return e($prefix . '/' . $file . '?v=' . UI_VERSION);
 }
 
-$view = !$user ? $page : ($error ? 'error' : $page);
+$view = !$user ? $page : ($error && $page !== 'account' ? 'error' : $page);
 require __DIR__ . '/partials/head.php';
 require __DIR__ . '/partials/header.php';
 ?>

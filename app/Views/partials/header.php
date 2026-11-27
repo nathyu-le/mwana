@@ -12,5 +12,5 @@ $initials = $user ? strtoupper(substr(preg_replace('/[^a-z0-9]/i','',explode('@'
 <?php endforeach ?></nav>
 <details class="account"><summary aria-label="Tài khoản"><?=e($initials?:'MG')?></summary>
 <div class="menu"><strong><?=e($user['email'])?></strong><small><?= $user['role']==='admin'?'Quản trị viên':'Phân tích viên'?> · v<?=UI_VERSION?></small>
-<a href="?page=dashboard">Tổng quan</a><form method="post"><?=token()?><button name="action" value="logout">Đăng xuất</button></form></div></details>
+<a href="?page=account">Tài khoản</a><a href="?page=dashboard">Tổng quan</a><form method="post"><?=token()?><button name="action" value="logout">Đăng xuất</button></form></div></details>
 <?php endif ?></div></header>

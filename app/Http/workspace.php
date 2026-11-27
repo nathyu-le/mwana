@@ -16,7 +16,7 @@ require dirname(__DIR__).'/VirusTotal.php';
 $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
 function token(): string { return '<input type="hidden" name="csrf" value="'.e($_SESSION['csrf']).'">'; }
 $labels = ['matched'=>'Khớp chữ ký','unmatched'=>'Chưa khớp','partial'=>'Chưa hoàn tất'];
-$pages = ['dashboard'=>'Tổng quan','scanner'=>'Trình quét','history'=>'Lịch sử','admin'=>'Chữ ký','report'=>'Báo cáo','register'=>'Tạo tài khoản','login'=>'Đăng nhập'];
+$pages = ['dashboard'=>'Tổng quan','scanner'=>'Trình quét','history'=>'Lịch sử','admin'=>'Chữ ký','report'=>'Báo cáo','account'=>'Tài khoản','register'=>'Tạo tài khoản','login'=>'Đăng nhập'];
 $user = $_SESSION['user']??null;
 $requestedPage = $_GET['page'] ?? 'scanner';
 $page = $user ? (is_string($requestedPage) ? $requestedPage : '') : ($requestedPage === 'register' ? 'register' : 'login');
@@ -42,6 +42,11 @@ try {
             go('page=scanner');
         }
         if ($action==='logout') { $_SESSION=[]; session_destroy(); go(''); }
+        if ($action === 'change_password') {
+            changePassword((int)$user['id'], $_POST);
+            $_SESSION['notice'] = 'Đã đổi mật khẩu.';
+            go('page=account');
+        }
         if ($action==='scan') go('page=report&id='.saveUpload((int)$user['id']));
         if ($action==='lookup') {
             $scan = ownScan((int)($_POST['id']??0),(int)$user['id']);
@@ -80,7 +85,7 @@ try {
         } elseif ($page==='admin') {
             $rules = query('SELECT * FROM signatures ORDER BY id DESC')->fetchAll();
             $enabled = query('SELECT vt_enabled FROM settings WHERE id=1')->fetchColumn();
-        } elseif ($page!=='scanner') { http_response_code(404); throw new InputError('Trang không tồn tại.'); }
+        } elseif ($page!=='account') { http_response_code(404); throw new InputError('Trang không tồn tại.'); }
     }
 } catch (InputError $e) {
     $error = $e->getMessage();
