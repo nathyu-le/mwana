@@ -1,5 +1,8 @@
 <?php
 return [
+    'Loading khi tải lại trang (giây)' => 'Reload animation (seconds)',
+    '0 giây để tắt.' => 'Set to 0 to turn off.',
+    'Nhập từ 0 đến 30 giây, tối đa một chữ số thập phân.' => 'Enter 0 to 30 seconds with up to one decimal place.',
     'Tắt · chưa có API key' => 'Off · no API key', 'Đang hoạt động' => 'Connected',
     'Đã cấu hình · chưa kiểm tra' => 'Configured · not yet checked',
     'Cần kiểm tra lại' => 'Check connection again', 'API từ chối truy cập' => 'API access denied',

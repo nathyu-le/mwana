@@ -17,6 +17,11 @@
             <option value="vi" <?= $settings['default_locale'] === 'vi' ? 'selected' : '' ?>>Tiếng Việt</option>
             <option value="en" <?= $settings['default_locale'] === 'en' ? 'selected' : '' ?>>English</option>
         </select></label>
+        <label><?= e(t('Loading khi tải lại trang (giây)')) ?>
+            <input name="reload_seconds" type="number" min="0" max="30" step="0.1" required
+                aria-describedby="reload-help" value="<?=e($settings['reload_seconds'])?>">
+            <small id="reload-help"><?= e(t('0 giây để tắt.')) ?></small>
+        </label>
         <button name="action" value="save_site"><?= e(t('Lưu cài đặt')) ?></button>
     </form>
 </section>

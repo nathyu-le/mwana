@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="<?= e($locale) ?>">
+<html lang="<?= e($locale) ?>" data-reload-seconds="<?= e($settings['reload_seconds'] ?? 0) ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">

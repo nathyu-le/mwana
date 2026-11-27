@@ -1,22 +1,31 @@
-// The server already rendered the page. Only a browser refresh gets the entrance.
 (() => {
-  const navigation = performance.getEntriesByType('navigation')[0];
-  if (navigation?.type !== 'reload' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
   const root = document.documentElement;
-  const started = performance.now();
-  root.classList.add('booting');
+  const seconds = Number(root.dataset.reloadSeconds);
+  const navigation = performance.getEntriesByType('navigation')[0];
+  if (navigation?.type !== 'reload' || matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      !Number.isFinite(seconds) || seconds <= 0 || seconds > 30) return;
+
+  const hold = seconds * 1000;
+  const fade = 220;
+  let revealTimer;
+  let finishTimer;
 
   function finish() {
+    clearTimeout(revealTimer);
+    clearTimeout(finishTimer);
     root.classList.remove('booting', 'revealing');
   }
-  const deadline = setTimeout(finish, 2500);
+
+  root.classList.add('booting');
+  // Also release the overlay if the document never finishes parsing.
+  finishTimer = setTimeout(finish, hold + 2500);
   document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(() => {
-      if (!root.classList.contains('booting')) return;
+    if (!root.classList.contains('booting')) return;
+    clearTimeout(finishTimer);
+    revealTimer = setTimeout(() => {
       root.classList.add('revealing');
-      setTimeout(() => { clearTimeout(deadline); finish(); }, 240);
-    }, Math.max(0, 650 - (performance.now() - started)));
+      finishTimer = setTimeout(finish, fade);
+    }, hold);
   }, { once: true });
-  window.addEventListener('pageshow', event => { if (event.persisted) finish(); });
+  window.addEventListener('pagehide', finish, { once: true });
 })();
