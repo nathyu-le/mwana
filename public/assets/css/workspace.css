@@ -78,3 +78,6 @@ input:not([type=file]),select { background: #101115; border: 1px solid #484955; 
 .admin-tabs a { padding: 8px 0; color: var(--muted) }
 .admin-tabs a[aria-current] { color: var(--ink); border-bottom: 2px solid var(--accent) }
 .loginform p { margin-top: 14px }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 12px; margin: 16px 0 28px }
+.stat-grid .card { margin: 0; padding: 16px }
+.stat-grid strong { display: block; font-size: 30px; font-variant-numeric: tabular-nums }

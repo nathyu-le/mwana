@@ -12,6 +12,7 @@ require dirname(__DIR__).'/Analysis/Scanner.php';
 require dirname(__DIR__).'/Actions.php';
 require dirname(__DIR__).'/Accounts/passwords.php';
 require dirname(__DIR__).'/Admin/settings.php';
+require dirname(__DIR__).'/Admin/statistics.php';
 require dirname(__DIR__).'/VirusTotal.php';
 
 $_SESSION['csrf'] ??= bin2hex(random_bytes(32));
@@ -21,9 +22,9 @@ $pages = ['dashboard'=>'Tổng quan','scanner'=>'Trình quét','history'=>'Lịc
 $user = $_SESSION['user']??null;
 $requestedPage = $_GET['page'] ?? 'scanner';
 $page = $user ? (is_string($requestedPage) ? $requestedPage : '') : ($requestedPage === 'register' ? 'register' : 'login');
-$adminTabs = ['settings'=>'Cài đặt', 'signatures'=>'Chữ ký'];
-$selectedTab = $_GET['tab'] ?? 'settings';
-$adminTab = is_string($selectedTab) && isset($adminTabs[$selectedTab]) ? $selectedTab : 'settings';
+$adminTabs = ['overview'=>'Thống kê', 'settings'=>'Cài đặt', 'signatures'=>'Chữ ký'];
+$selectedTab = $_GET['tab'] ?? 'overview';
+$adminTab = is_string($selectedTab) && isset($adminTabs[$selectedTab]) ? $selectedTab : 'overview';
 $settings = ['site_name'=>'MalwareGuard', 'registration_open'=>false];
 $error = null;
 $notice = $_SESSION['notice'] ?? null;
@@ -98,6 +99,8 @@ try {
                 $totals = query("SELECT COUNT(*) total, COALESCE(SUM(status='matched'),0) matched,
                     COALESCE(SUM(status='partial'),0) partial FROM scans WHERE user_id=?",[$user['id']])->fetch();
             }
+        } elseif ($page==='admin' && $adminTab==='overview') {
+            [$counts, $days] = siteStatistics();
         } elseif ($page==='admin' && $adminTab==='signatures') {
             $rules = query('SELECT * FROM signatures ORDER BY id DESC')->fetchAll();
             $enabled = query('SELECT vt_enabled FROM settings WHERE id=1')->fetchColumn();
