@@ -1,4 +1,4 @@
-# MalwareGuard 1.2.0
+# MalwareGuard 1.3.0
 
 Website phân tích tĩnh cho đồ án Malware Analysis, xây dựng bằng PHP 8.1+ và MySQL/MariaDB. Người dùng đăng nhập để quét tệp, xem bằng chứng và xuất báo cáo JSON. Quản trị viên quản lý chữ ký và bật hoặc tắt tra cứu VirusTotal.
 
@@ -8,9 +8,10 @@ Website phân tích tĩnh cho đồ án Malware Analysis, xây dựng bằng PHP
 2. Clone repo vào thư mục riêng, ví dụ `/home/ACCOUNT/malwareguard`. Trong **Domains**, trỏ Document Root của subdomain vào `/home/ACCOUNT/malwareguard/public`. Nếu host chỉ cho dùng `public_html`, chép toàn bộ nội dung `public/` (gồm CSS, JavaScript và logo) vào đó và đổi dòng `require` duy nhất trong `index.php` để trỏ đến `app/Http/workspace.php` trong thư mục riêng. Giữ config, database, bin và tests ngoài thư mục công khai.
 3. Tạo database trống cùng database user trong **Manage My Databases**. Cấp quyền trên database đó. Import `database/schema.sql` một lần bằng phpMyAdmin.
 4. Chép `config/example.php` thành `config/local.php`. Điền tên database, user và mật khẩu của hosting. Có thể để trống `vt_key`.
-5. Mở Terminal của cPanel ở thư mục dự án. Dùng PHP CLI cùng phiên bản với website. Tạo tài khoản, nhập mật khẩu ở lời nhắc.
+5. Mở Terminal của cPanel ở thư mục dự án. Dùng PHP CLI cùng phiên bản với website. Chạy `php bin/migrate.php` để khởi tạo cài đặt và ngôn ngữ trước khi mở trang. Tạo tài khoản, nhập mật khẩu ở lời nhắc.
 
 ~~~bash
+php bin/migrate.php
 php bin/user.php admin@example.org admin
 php bin/user.php analyst@example.org analyst
 ~~~
@@ -24,7 +25,9 @@ php bin/user.php analyst@example.org analyst
 
 ## Đồng bộ thitruongmmo.com
 
-Hosting kiểm tra nhánh `main` mỗi 5 phút. Mỗi lần phát hành chạy test PHP, kiểm tra nội dung từng asset qua HTTPS rồi mới chuyển trang chủ sang commit mới. Nếu trang đăng nhập không vượt qua kiểm tra, script khôi phục index trước đó. Cấu hình riêng nằm ở `~/thitruongmmo.com/malwareguard_app/config/local.php`. Lịch sử triển khai nằm ở `~/thitruongmmo.com/.mg-deploy/deploy.log`.
+Hosting kiểm tra nhánh `main` mỗi 5 phút. Bản đang chạy nằm trong `~/thitruongmmo.com/malwareguard_app/`, với đầy đủ thư mục như trên Git. `public/` trỏ đến document root hiện tại `~/thitruongmmo.com/public_html/malwareguard/`. CSS, JS, font và logo có đường dẫn cố định dưới `assets/`. Cấu hình riêng nằm tại `config/local.php`. Script kiểm tra PHP, chạy migration, so sánh từng tệp với Git và kiểm tra tài nguyên qua HTTPS. Nếu kiểm tra thất bại, các tệp đã thay được phục hồi. Nhật ký triển khai nằm ở `~/thitruongmmo.com/.mg-deploy/deploy.log`.
+
+Người dùng đăng ký từ trang đăng nhập và đổi mật khẩu hoặc ngôn ngữ trong **Tài khoản**. **Admin Panel** có thống kê toàn hệ thống, cài đặt website và quản lý chữ ký. Tiếng Việt là mặc định ban đầu. Admin có mặc định riêng là tiếng Việt, mỗi tài khoản có thể lưu lựa chọn cá nhân.
 
 Để thiết lập lần đầu trên đúng tài khoản hosting của website:
 

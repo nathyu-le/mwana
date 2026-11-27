@@ -22,8 +22,6 @@ def package(output):
             public = path.parts[0] == "public"
             target = PUBLIC / path.relative_to("public") if public else PRIVATE / path
             data = subprocess.check_output(["git", "show", f"HEAD:{name}"], cwd=ROOT)
-            if name == "public/index.php":
-                data = b"<?php\ndeclare(strict_types=1);\n\nrequire dirname(__DIR__, 2) . '/malwareguard_app/app/Http/workspace.php';\n"
             member = ZipInfo(str(target))
             member.create_system = 3
             member.external_attr = (stat.S_IFREG | (0o644 if public else 0o600)) << 16
